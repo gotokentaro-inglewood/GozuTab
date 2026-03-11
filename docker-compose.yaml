@@ -1,15 +1,22 @@
 services:
   # データベース (PostgreSQL)
-  db:
-    image: postgres:16-alpine
-    container_name: gozutab-db
-    restart: always
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: tab_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./docker/postgres/data:/var/lib/postgresql/data # データをPCに保存
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d # 初期設定SQL用
+    db:
+        image: postgres:16-alpine
+        container_name: gozutab-db
+        restart: always
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: tab_db
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./docker/postgres/data:/var/lib/postgresql/data # データをPCに保存
+            - ./docker/postgres/init:/docker-entrypoint-initdb.d # 初期設定SQL用
+
+    adminer:
+        image: adminer:5.4.2
+        container_name: gozutab-adminer
+        restart: always
+        ports:
+            - "8080:8080"

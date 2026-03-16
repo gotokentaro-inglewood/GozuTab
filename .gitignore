@@ -1,0 +1,4 @@
+docker/postgres/data
+
+.DS_Store
+Thumbs.db

@@ -1,0 +1,22 @@
+Table users {
+  id integer [primary key]
+  username varchar
+  mail_address varchar [unique]
+  created_at timestamp
+  password varchar
+  icon varchar [note: 'image url']
+}
+
+Table tabs {
+  id integer [primary key]
+  user_id integer [not null]
+  title varchar
+  artist varchar
+  content text [note: 'json file as text']
+  audio varchar [note: 'audio url']
+  status varchar [note: 'draft, public, privateなど']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Ref: users.id < tabs.user_id

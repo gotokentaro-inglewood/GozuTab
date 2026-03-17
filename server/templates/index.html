@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>GozuTab Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f7f6; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1 { color: #2c3e50; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 8px 0; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <h1>🎸 GozuTab 開発ダッシュボード</h1>
+
+    <div class="card">
+        <h2>👤 ユーザー一覧</h2>
+        <ul>
+            {{range .Users}}
+            <li><strong>{{.Name}}</strong> ({{.Email}})</li>
+            {{else}}
+            <li>ユーザーはまだいません。</li>
+            {{end}}
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>🎼 投稿されたタブ譜</h2>
+        <ul>
+            {{range .Tabs}}
+            <li>{{.Title}}</li>
+            {{else}}
+            <li>タブ譜はまだありません。</li>
+            {{end}}
+        </ul>
+    </div>
+</body>
+</html>

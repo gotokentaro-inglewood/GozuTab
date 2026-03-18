@@ -37,3 +37,43 @@ func InitDB() *sql.DB {
 	log.Fatal("Failed to connect to database")
 	return nil
 }
+
+func CreateUsersTable(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		name TEXT NOT NULL,
+		email TEXT UNIQUE NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		icon_url TEXT DEFAULT NULL
+	);`
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Printf("Error creating users table: %v\n", err)
+		return err
+	}
+	log.Println("Users table created successfully!")
+	return nil
+}
+
+func CreateTabsTable(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS tabs (
+		id SERIAL PRIMARY KEY,
+		user_id INTEGER REFERENCES users(id),
+		title TEXT NOT NULL,
+		artist TEXT,
+		content TEXT,
+		audio_url TEXT,
+		status TEXT,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	);`
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Printf("Error creating tabs table: %v\n", err)
+		return err
+	}
+	log.Println("Tabs table created successfully!")
+	return nil
+}

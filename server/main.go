@@ -9,11 +9,14 @@ import (
 	"github.com/gotokentaro-inglewood/GozuTab/database"
 	"github.com/gotokentaro-inglewood/GozuTab/handler"
 	"github.com/gotokentaro-inglewood/GozuTab/repository"
+	"github.com/joho/godotenv"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	godotenv.Load()
+
 	// 環境変数からデータベース接続情報を取得
 	host := os.Getenv("DB_HOST")
 	user := os.Getenv("DB_USER")

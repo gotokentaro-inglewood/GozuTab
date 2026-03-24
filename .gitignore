@@ -1,5 +1,7 @@
 docker/postgres/data
 
+server/.env
+
 .DS_Store
 Thumbs.db
 

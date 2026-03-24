@@ -9,9 +9,13 @@ type User struct {
 }
 
 type Tab struct {
-	ID     int
-	UserID int
-	Title  string
+	ID       int
+	UserID   int
+	Title    string
+	Artist   string
+	Content  string
+	AudioURL string
+	Status   string
 }
 
 type PageData struct {

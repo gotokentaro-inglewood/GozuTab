@@ -39,6 +39,12 @@ func main() {
 
 	http.HandleFunc("/", handler.IndexHandler(db))
 	http.HandleFunc("/users/create", handler.CreateUserHandler(db))
+	http.HandleFunc("/users/update", handler.UpdateUserHandler(db))
+	http.HandleFunc("/users/delete", handler.DeleteUserHandler(db))
+	http.HandleFunc("/tabs", handler.TabsHandler(db))
+	http.HandleFunc("/tabs/create", handler.CreateTabHandler(db))
+	http.HandleFunc("/tabs/update", handler.UpdateTabHandler(db))
+	http.HandleFunc("/tabs/delete", handler.DeleteTabHandler(db))
 
 	fmt.Printf("Starting server on port %s...\n", appPort)
 	addr := fmt.Sprintf("0.0.0.0:%s", appPort)

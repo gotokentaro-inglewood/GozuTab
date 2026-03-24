@@ -2,31 +2,26 @@ package handler
 
 import (
 	"database/sql"
-	"html/template"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/gotokentaro-inglewood/GozuTab/models"
 	"github.com/gotokentaro-inglewood/GozuTab/repository"
 )
 
 func TabsHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 		tabs, err := repository.GetAllTabs(db)
 		if err != nil {
+			log.Printf("Error fetching tabs: %v\n", err)
 			http.Error(w, "データ取得に失敗しました", http.StatusInternalServerError)
 			return
 		}
 
-		tmpl, err := template.ParseFiles("templates/tabs.html")
-		if err != nil {
-			log.Printf("Error parsing template: %v\n", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		tmpl.Execute(w, tabs)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tabs)
 	}
 }
 
@@ -37,20 +32,29 @@ func CreateTabHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		userID, err := strconv.Atoi(r.FormValue("user_id"))
-		if err != nil {
-			http.Error(w, "無効なuser_idです", http.StatusBadRequest)
+		var req struct {
+			UserID  int    `json:"user_id"`
+			Title   string `json:"title"`
+			Content string `json:"content"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
-		title := r.FormValue("title")
-		content := r.FormValue("content")
 
-		if err := repository.CreateTab(db, userID, title, content); err != nil {
+		var tab models.Tab
+		err := db.QueryRow(
+			`INSERT INTO tabs (user_id, title, content) VALUES ($1, $2, $3) RETURNING id, user_id, title, COALESCE(artist,''), COALESCE(content,''), COALESCE(audio_url,''), COALESCE(status,'')`,
+			req.UserID, req.Title, req.Content,
+		).Scan(&tab.ID, &tab.UserID, &tab.Title, &tab.Artist, &tab.Content, &tab.AudioURL, &tab.Status)
+		if err != nil {
 			http.Error(w, "保存に失敗しました", http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, "/tabs", http.StatusSeeOther)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(tab)
 	}
 }
 
@@ -61,20 +65,28 @@ func UpdateTabHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		id, err := strconv.Atoi(r.FormValue("id"))
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
 			http.Error(w, "無効なIDです", http.StatusBadRequest)
 			return
 		}
-		title := r.FormValue("title")
-		content := r.FormValue("content")
 
-		if err := repository.UpdateTab(db, id, title, content); err != nil {
+		var req struct {
+			Title   string `json:"title"`
+			Content string `json:"content"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		if err := repository.UpdateTab(db, id, req.Title, req.Content); err != nil {
 			http.Error(w, "更新に失敗しました", http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"message": "updated"})
 	}
 }
 
@@ -85,7 +97,7 @@ func DeleteTabHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		id, err := strconv.Atoi(r.FormValue("id"))
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
 			http.Error(w, "無効なIDです", http.StatusBadRequest)
 			return
@@ -96,6 +108,7 @@ func DeleteTabHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		http.Redirect(w, r, "/tabs", http.StatusSeeOther)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"message": "deleted"})
 	}
 }

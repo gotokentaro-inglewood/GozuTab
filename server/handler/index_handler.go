@@ -2,7 +2,7 @@ package handler
 
 import (
 	"database/sql"
-	"html/template"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -12,8 +12,6 @@ import (
 
 func IndexHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 		users, err := repository.GetAllUsers(db)
 		if err != nil {
 			log.Printf("Error fetching users: %v\n", err)
@@ -33,12 +31,7 @@ func IndexHandler(db *sql.DB) http.HandlerFunc {
 			Tabs:  tabs,
 		}
 
-		tmpl, err := template.ParseFiles("templates/index.html")
-		if err != nil {
-			log.Printf("Error parsing template: %v\n", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		tmpl.Execute(w, data)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
 	}
 }

@@ -1,0 +1,72 @@
+@baseUrl = http://localhost:8000
+
+# =============================================================
+# Users
+# =============================================================
+
+### [Users] 一覧取得
+GET {{baseUrl}}/
+
+###
+
+### [Users] Create → 201 Created + 作成したユーザーのJSON
+POST {{baseUrl}}/users/create
+Content-Type: application/json
+
+{
+  "name": "Alice",
+  "email": "alice@example.com"
+}
+
+###
+
+### [Users] Update → 200 OK (idはクエリパラメータ)
+POST {{baseUrl}}/users/update?id=20
+Content-Type: application/json
+
+{
+  "name": "Alice Updated",
+  "icon_url": "https://example.com/icon.png"
+}
+
+###
+
+### [Users] Delete → 200 OK (idはクエリパラメータ)
+POST {{baseUrl}}/users/delete?id=20
+
+# =============================================================
+# Tabs
+# =============================================================
+
+###
+
+### [Tabs] 一覧取得
+GET {{baseUrl}}/tabs
+
+###
+
+### [Tabs] Create → 201 Created + 作成したタブのJSON (user_idは実際の値に変更)
+POST {{baseUrl}}/tabs/create
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "title": "Wonderwall",
+  "content": "Capo 2\nEm G D A"
+}
+
+###
+
+### [Tabs] Update → 200 OK (idはクエリパラメータ)
+POST {{baseUrl}}/tabs/update?id=30
+Content-Type: application/json
+
+{
+  "title": "Wonderwall (Updated)",
+  "content": "Capo 2\nEm G D A\nUpdated content"
+}
+
+###
+
+### [Tabs] Delete → 200 OK (idはクエリパラメータ)
+POST {{baseUrl}}/tabs/delete?id=30

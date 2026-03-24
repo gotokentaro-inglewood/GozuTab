@@ -25,6 +25,7 @@ services:
     server:
         build: ./server
         container_name: gozutab-server
+        restart: always
         ports:
             - "8000:8000"
         volumes:

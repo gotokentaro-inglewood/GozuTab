@@ -1,11 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gotokentaro-inglewood/GozuTab/database"
+	"github.com/gotokentaro-inglewood/GozuTab/handler"
+	"github.com/gotokentaro-inglewood/GozuTab/repository"
 
 	_ "github.com/lib/pq"
 )
@@ -24,26 +27,24 @@ func main() {
 	fmt.Printf("Connecting to database with DSN: %s\n", dsn)
 
 	// データベースに接続
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		log.Fatal(err)
+	db := database.InitDB()
+	if db == nil {
+		log.Fatal("Failed to initialize database")
 	}
 	defer db.Close()
 
-	// データベース接続の確認
-	var dbString string
-	for i := 0; i < 10; i++ {
-		err = db.Ping()
-		if err == nil {
-			dbString = "success"
-			fmt.Println("Database connection successful!")
-			break
-		}
-	}
+	database.CreateUsersTable(db)
+	database.CreateTabsTable(db)
+	repository.InsertTestData(db)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, World! Database connection status: %s", dbString)
-	})
+	http.HandleFunc("/", handler.IndexHandler(db))
+	http.HandleFunc("/users/create", handler.CreateUserHandler(db))
+	http.HandleFunc("/users/update", handler.UpdateUserHandler(db))
+	http.HandleFunc("/users/delete", handler.DeleteUserHandler(db))
+	http.HandleFunc("/tabs", handler.TabsHandler(db))
+	http.HandleFunc("/tabs/create", handler.CreateTabHandler(db))
+	http.HandleFunc("/tabs/update", handler.UpdateTabHandler(db))
+	http.HandleFunc("/tabs/delete", handler.DeleteTabHandler(db))
 
 	fmt.Printf("Starting server on port %s...\n", appPort)
 	addr := fmt.Sprintf("0.0.0.0:%s", appPort)

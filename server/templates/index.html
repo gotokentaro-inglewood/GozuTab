@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>GozuTab Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f7f6; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1 { color: #2c3e50; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 8px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; }
+        a { color: #2980b9; text-decoration: none; }
+        input { margin: 4px; padding: 4px 8px; }
+        button { margin: 4px; padding: 4px 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🎸 GozuTab 開発ダッシュボード</h1>
+    <a href="/tabs">🎼 タブ譜一覧へ</a>
+
+    <div class="card">
+        <h2>👤 ユーザー一覧</h2>
+        <ul>
+            {{range .Users}}
+            <li>
+                <strong>{{.Name}}</strong> ({{.Email}})
+                <form action="/users/update" method="POST" style="display:inline">
+                    <input type="hidden" name="id" value="{{.ID}}">
+                    <input type="text" name="name" placeholder="新しい名前">
+                    <input type="text" name="icon_url" placeholder="アイコンURL">
+                    <button type="submit">更新</button>
+                </form>
+                <form action="/users/delete" method="POST" style="display:inline">
+                    <input type="hidden" name="id" value="{{.ID}}">
+                    <button type="submit">削除</button>
+                </form>
+            </li>
+            {{else}}
+            <li>ユーザーはまだいません。</li>
+            {{end}}
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>🆕 新規ユーザー登録</h2>
+        <form action="/users/create" method="POST">
+            <input type="text" name="name" placeholder="名前" required>
+            <input type="email" name="email" placeholder="メールアドレス" required>
+            <button type="submit">登録する</button>
+        </form>
+    </div>
+</body>
+</html>

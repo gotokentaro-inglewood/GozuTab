@@ -8,7 +8,10 @@
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
         h1 { color: #2c3e50; }
         ul { list-style: none; padding: 0; }
-        li { padding: 8px 0; border-bottom: 1px solid #eee; }
+        li { padding: 8px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; }
+        a { color: #2980b9; text-decoration: none; }
+        input { margin: 4px; padding: 4px 8px; }
+        button { margin: 4px; padding: 4px 12px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -19,20 +22,21 @@
         <h2>👤 ユーザー一覧</h2>
         <ul>
             {{range .Users}}
-            <li><strong>{{.Name}}</strong> ({{.Email}})</li>
+            <li>
+                <strong>{{.Name}}</strong> ({{.Email}})
+                <form action="/users/update" method="POST" style="display:inline">
+                    <input type="hidden" name="id" value="{{.ID}}">
+                    <input type="text" name="name" placeholder="新しい名前">
+                    <input type="text" name="icon_url" placeholder="アイコンURL">
+                    <button type="submit">更新</button>
+                </form>
+                <form action="/users/delete" method="POST" style="display:inline">
+                    <input type="hidden" name="id" value="{{.ID}}">
+                    <button type="submit">削除</button>
+                </form>
+            </li>
             {{else}}
             <li>ユーザーはまだいません。</li>
-            {{end}}
-        </ul>
-    </div>
-
-    <div class="card">
-        <h2>🎼 投稿されたタブ譜</h2>
-        <ul>
-            {{range .Tabs}}
-            <li>{{.Title}}</li>
-            {{else}}
-            <li>タブ譜はまだありません。</li>
             {{end}}
         </ul>
     </div>

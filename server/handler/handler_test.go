@@ -19,12 +19,48 @@ import (
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
+	os.Setenv("API_KEY", "test-key")
 	testDB = database.InitDB()
 	database.CreateUsersTable(testDB)
 	database.CreateTabsTable(testDB)
 	code := m.Run()
 	testDB.Close()
 	os.Exit(code)
+}
+
+func TestAuthMiddleware(t *testing.T) {
+	dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	t.Run("valid key", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.Header.Set("Authorization", "Bearer test-key")
+		w := httptest.NewRecorder()
+		handler.AuthMiddleware(dummyHandler)(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("expected 200, got %d", w.Code)
+		}
+	})
+
+	t.Run("missing key", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		w := httptest.NewRecorder()
+		handler.AuthMiddleware(dummyHandler)(w, req)
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("expected 401, got %d", w.Code)
+		}
+	})
+
+	t.Run("wrong key", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.Header.Set("Authorization", "Bearer wrong-key")
+		w := httptest.NewRecorder()
+		handler.AuthMiddleware(dummyHandler)(w, req)
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("expected 401, got %d", w.Code)
+		}
+	})
 }
 
 func clearTables(t *testing.T) {

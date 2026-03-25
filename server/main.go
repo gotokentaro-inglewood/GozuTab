@@ -40,14 +40,15 @@ func main() {
 	database.CreateTabsTable(db)
 	repository.InsertTestData(db)
 
-	http.HandleFunc("/", handler.IndexHandler(db))
-	http.HandleFunc("/users/create", handler.CreateUserHandler(db))
-	http.HandleFunc("/users/update", handler.UpdateUserHandler(db))
-	http.HandleFunc("/users/delete", handler.DeleteUserHandler(db))
-	http.HandleFunc("/tabs", handler.TabsHandler(db))
-	http.HandleFunc("/tabs/create", handler.CreateTabHandler(db))
-	http.HandleFunc("/tabs/update", handler.UpdateTabHandler(db))
-	http.HandleFunc("/tabs/delete", handler.DeleteTabHandler(db))
+	auth := handler.AuthMiddleware
+	http.HandleFunc("/", auth(handler.IndexHandler(db)))
+	http.HandleFunc("/users/create", auth(handler.CreateUserHandler(db)))
+	http.HandleFunc("/users/update", auth(handler.UpdateUserHandler(db)))
+	http.HandleFunc("/users/delete", auth(handler.DeleteUserHandler(db)))
+	http.HandleFunc("/tabs", auth(handler.TabsHandler(db)))
+	http.HandleFunc("/tabs/create", auth(handler.CreateTabHandler(db)))
+	http.HandleFunc("/tabs/update", auth(handler.UpdateTabHandler(db)))
+	http.HandleFunc("/tabs/delete", auth(handler.DeleteTabHandler(db)))
 
 	fmt.Printf("Starting server on port %s...\n", appPort)
 	addr := fmt.Sprintf("0.0.0.0:%s", appPort)

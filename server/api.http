@@ -6,11 +6,13 @@
 
 ### [Users] 一覧取得
 GET {{baseUrl}}/
+Authorization: Bearer dev-secret-key-change-in-production
 
 ###
 
 ### [Users] Create → 201 Created + 作成したユーザーのJSON
 POST {{baseUrl}}/users/create
+Authorization: Bearer dev-secret-key-change-in-production
 Content-Type: application/json
 
 {
@@ -21,7 +23,8 @@ Content-Type: application/json
 ###
 
 ### [Users] Update → 200 OK (idはクエリパラメータ)
-POST {{baseUrl}}/users/update?id=20
+POST {{baseUrl}}/users/update?id=3
+Authorization: Bearer dev-secret-key-change-in-production
 Content-Type: application/json
 
 {
@@ -32,7 +35,7 @@ Content-Type: application/json
 ###
 
 ### [Users] Delete → 200 OK (idはクエリパラメータ)
-POST {{baseUrl}}/users/delete?id=20
+POST {{baseUrl}}/users/delete?id=3
 
 # =============================================================
 # Tabs
@@ -58,7 +61,7 @@ Content-Type: application/json
 ###
 
 ### [Tabs] Update → 200 OK (idはクエリパラメータ)
-POST {{baseUrl}}/tabs/update?id=30
+POST {{baseUrl}}/tabs/update?id=2
 Content-Type: application/json
 
 {
@@ -69,4 +72,4 @@ Content-Type: application/json
 ###
 
 ### [Tabs] Delete → 200 OK (idはクエリパラメータ)
-POST {{baseUrl}}/tabs/delete?id=30
+POST {{baseUrl}}/tabs/delete?id=2

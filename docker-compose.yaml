@@ -39,3 +39,18 @@ services:
             - DB_NAME=tab_db
         depends_on:
             - db # データベースが先に起動するようにする
+
+    # Reactフロントエンド
+    client:
+        build: ./client
+        container_name: gozutab-client
+        restart: always
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./client:/app
+            - /app/node_modules
+        environment:
+            - VITE_API_TARGET=http://server:8000
+        depends_on:
+            - server

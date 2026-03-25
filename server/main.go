@@ -41,14 +41,16 @@ func main() {
 	repository.InsertTestData(db)
 
 	auth := handler.AuthMiddleware
-	http.HandleFunc("/", auth(handler.IndexHandler(db)))
-	http.HandleFunc("/users/create", auth(handler.CreateUserHandler(db)))
-	http.HandleFunc("/users/update", auth(handler.UpdateUserHandler(db)))
-	http.HandleFunc("/users/delete", auth(handler.DeleteUserHandler(db)))
-	http.HandleFunc("/tabs", auth(handler.TabsHandler(db)))
-	http.HandleFunc("/tabs/create", auth(handler.CreateTabHandler(db)))
-	http.HandleFunc("/tabs/update", auth(handler.UpdateTabHandler(db)))
-	http.HandleFunc("/tabs/delete", auth(handler.DeleteTabHandler(db)))
+	cors := handler.CORSMiddleware
+	http.HandleFunc("/api/health", cors(handler.HealthHandler()))
+	http.HandleFunc("/", cors(auth(handler.IndexHandler(db))))
+	http.HandleFunc("/users/create", cors(auth(handler.CreateUserHandler(db))))
+	http.HandleFunc("/users/update", cors(auth(handler.UpdateUserHandler(db))))
+	http.HandleFunc("/users/delete", cors(auth(handler.DeleteUserHandler(db))))
+	http.HandleFunc("/tabs", cors(auth(handler.TabsHandler(db))))
+	http.HandleFunc("/tabs/create", cors(auth(handler.CreateTabHandler(db))))
+	http.HandleFunc("/tabs/update", cors(auth(handler.UpdateTabHandler(db))))
+	http.HandleFunc("/tabs/delete", cors(auth(handler.DeleteTabHandler(db))))
 
 	fmt.Printf("Starting server on port %s...\n", appPort)
 	addr := fmt.Sprintf("0.0.0.0:%s", appPort)
